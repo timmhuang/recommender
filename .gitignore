@@ -1,0 +1,8 @@
+Data.iml
+.idea/*
+.idea
+builds/*
+builds
+*.jar
+*.class
+output*
