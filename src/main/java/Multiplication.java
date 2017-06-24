@@ -22,8 +22,9 @@ public class Multiplication {
 		@Override
 		public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 			//input: movieB \t movieA=relation
-
+			String[] line = value.toString().trim().split("\t");
 			//pass data to reducer
+			context.write(new Text(line[0]), new Text(line[1]));
 		}
 	}
 
@@ -35,6 +36,8 @@ public class Multiplication {
 
 			//input: user,movie,rating
 			//pass data to reducer
+			String[] line = value.toString().trim().split(",");
+			context.write(new Text(line[1]), new Text(line[0] + ":" + line[2]));
 		}
 	}
 
@@ -46,6 +49,27 @@ public class Multiplication {
 
 			//key = movieB value = <movieA=relation, movieC=relation... userA:rating, userB:rating...>
 			//collect the data for each movie, then do the multiplication
+			Map<String, Double> relationMat = new HashMap<String, Double>();
+			Map<String, Double> ratingMat = new HashMap<String, Double>();
+			for (Text val : values) {
+				String s = val.toString();
+				if (s.contains("=")) {
+					// item relation pair
+					String[] pair = s.split("=");
+					relationMat.put(pair[0], Double.parseDouble(pair[1]));
+				} else if (s.contains(":")) {
+					// user rating pair
+					String[] pair = s.split(":");
+					ratingMat.put(pair[0], Double.parseDouble(pair[1]));
+				}
+			}
+
+			for (String item : relationMat.keySet()) {
+                for (String user : ratingMat.keySet()) {
+                    Double prod = relationMat.get(item) * ratingMat.get(user);
+                    context.write(new Text(user + ":" + item), new DoubleWritable(prod));
+                }
+            }
 		}
 	}
 

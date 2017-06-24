@@ -23,7 +23,7 @@ public class Driver {
 		dataDividerByUser.main(path1);
 		coOccurrenceMatrixGenerator.main(path2);
 		normalize.main(path3);
-//		multiplication.main(path4);
+		multiplication.main(path4);
 //		sum.main(path5);
 
 	}

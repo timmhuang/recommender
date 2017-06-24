@@ -46,8 +46,8 @@ public class Normalize {
             }
 
             for (String k : relations.keySet()) {
-                Double normalized = new Double((double) relations.get(k) / total);
-                context.write(key, new Text(k + ":" + normalized.toString()));
+                Double normalized = (double) relations.get(k) / total;
+                context.write(key, new Text(k + "=" + normalized.toString()));
             }
         }
     }

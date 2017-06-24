@@ -10,6 +10,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class CoOccurrenceMatrixGenerator {
 	public static class MatrixGeneratorMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
@@ -20,10 +21,19 @@ public class CoOccurrenceMatrixGenerator {
 			//value = userid \t movie1: rating, movie2: rating...
 			//key = movie1: movie2 value = 1
 			//calculate each user rating list: <movieA, movieB>
-			String[] tokens = value.toString().trim().split(",");
+            String[] line = value.toString().trim().split("\t");
+			String[] tokens = line[1].split(",");
+			ArrayList<String> items = new ArrayList<String>();
 			for (String t : tokens) {
-				context.write(new Text(t), new IntWritable(1));
-			}
+			    items.add(t.split(":")[0]);
+            }
+			for (int i = 0; i < items.size(); ++i) {
+			    context.write(new Text(items.get(i) + ":" + items.get(i)), new IntWritable(1));
+			    for (int j = 0; j < i; ++j) {
+			        context.write(new Text(items.get(i) + ":" + items.get(j)), new IntWritable(1));
+			        context.write(new Text(items.get(j) + ":" + items.get(i)), new IntWritable(1));
+                }
+            }
 		}
 	}
 
