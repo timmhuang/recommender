@@ -24,7 +24,7 @@ public class Driver {
 		coOccurrenceMatrixGenerator.main(path2);
 		normalize.main(path3);
 		multiplication.main(path4);
-//		sum.main(path5);
+		sum.main(path5);
 
 	}
 
